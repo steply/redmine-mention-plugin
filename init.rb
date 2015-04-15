@@ -1,8 +1,15 @@
 require 'redmine'
-require 'dispatcher'
+require 'dispatcher' unless Rails::VERSION::MAJOR >= 3
 
-Dispatcher.to_prepare do
-  require_dependency 'journal_hook'
+if Rails::VERSION::MAJOR >= 3
+  ActionDispatch::Callbacks.to_prepare do
+    # use require_dependency if you plan to utilize development mode
+    require_dependency 'journal_hook'
+  end
+else
+  Dispatcher.to_prepare do
+    require_dependency 'journal_hook'
+  end
 end
 
 Redmine::Plugin.register :redmine_mention_plugin do
